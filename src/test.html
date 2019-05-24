@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Title</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      font: 14px / 1.2 "Microsoft Yahei"
+    }
+
+    ul, ol {
+      list-style-type: none;
+    }
+
+    .panel {
+      position: relative;
+      margin: 50px;
+    }
+
+    .label {
+      position: relative;
+      display: block;
+      width: 100%;
+      height: 50px;
+      line-height: 50px;
+      font-size: 20px;
+      color: #fff;
+      border-radius: 6px;
+      text-align: center;
+      background-color: green;
+      cursor: pointer;
+    }
+
+    img {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .preview {
+      display: block;
+      box-sizing: border-box;
+      padding: 15px;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="panel">
+  <label class="label">
+    <span>上传文件</span>
+    <input class="f" type="file" hidden multiple>
+  </label>
+  <div class="preview"></div>
+</div>
+
+<script src="../dist/imageHelper.js"></script>
+<script>
+
+  const input = document.querySelector('.f')
+  const imgHelper = new ImageHelper()
+
+  input.addEventListener('change', function () {
+    console.group('FileChange')
+    const files = this.files
+    const inputs = [0, files[0], {
+      input: files[1],
+      output: 'blob',
+      callback: function(data) {
+          console.log('cb data: %o', data)
+      }
+    }, files[2]]
+    console.log('files: %o', files)
+    console.groupEnd()
+    imgHelper.read(inputs, 'blob', function(data) {
+      console.group('read')
+      console.log('data: %o', data)
+      console.groupEnd()
+    })
+  })
+
+</script>
+</body>
+</html>
