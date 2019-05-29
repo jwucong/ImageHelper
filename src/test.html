@@ -67,6 +67,11 @@
 
   const input = document.querySelector('.f')
   const imgHelper = new ImageHelper()
+  imgHelper.read('https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1537829435,3411428842&fm=26&gp=0.jpg', 'blob', function(data) {
+    console.group('read')
+    console.log('data: %o', data)
+    console.groupEnd()
+  })
 
   input.addEventListener('change', function () {
     console.group('FileChange')

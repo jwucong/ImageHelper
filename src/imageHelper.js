@@ -32,7 +32,7 @@ export default class ImageHelper {
     const accept = ['object', 'string', 'file', 'blob']
     const getOutput = val => val === base64 ? base64 : blob
     const filter = value => typeOf(value, accept)
-    const list = [].concat.apply([], inputs).filter(filter).map(item => {
+    const list = [].concat(inputs).filter(filter).map(item => {
       if (type(item) === 'object') {
         return typeOf(item.input, accept.slice(1)) ? item : null
       }
@@ -55,7 +55,29 @@ export default class ImageHelper {
       const itype = type(input)
       const otype = getOutput(output)
       if (itype === 'string') {
-        exec(i, otype === base64 ? input : base64ToBlob(input), callback)
+        const isLink = /^https?:\/\//i.test(input)
+        console.log('input: %o', input)
+        console.log('itype: %o', itype)
+        console.log('isLink: %o', isLink)
+        if(isLink) {
+          const img = new Image()
+          img.setAttribute("crossOrigin",'Anonymous')
+          img.onload = function() {
+            const canvas = document.createElement('canvas')
+            const ctx = canvas.getContext('2d')
+            canvas.width = img.naturalWidth
+            canvas.height = img.naturalHeight
+            ctx.drawImage(this, 0, 0, canvas.width, canvas.height)
+            if(otype === base64) {
+              exec(i, canvas.toDataURL('image/jpeg'), callback)
+            } else {
+              canvas.toBlob(blob => exec(i, blob, callback), 'image/jpeg')
+            }
+          }
+          img.src = input
+        } else {
+          exec(i, otype === base64 ? input : base64ToBlob(input), callback)
+        }
       } else {
         const fn = otype === base64 ? blobToBase64 : fileToBlob
         fn(input, data => exec(i, data, callback))
